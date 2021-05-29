@@ -5,71 +5,108 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {   
     // Public Vars
-    public float movementSpeed, thrust;
+    public float movementSpeed, jumpHeight, jumpThrust, dashSpeed, maxDashDistance;
     public Transform pivotPoint;
     public Rigidbody playerRb;
 
     // Private Vars
-    private float startTime, elapsedTime;
-    private int doublePressCounter;
-    private KeyCode currentKey, lastKey;
-    private bool dashMode, initDash = true;
+    private Vector3 dashStartPos, dashCurrentPos, lastPlayerMovementInput;
+    private KeyCode currentKey, lastKey, dashDirection;
+    private bool dashMode, jumpMode;
 
     // Update is called once per frame
     private void Update(){
-        playerMovement(playerInput());
-        elapsedTime = Time.time - startTime;
-        keyDownDetector();
-    }
-
-    private void keyDownDetector(){
-        // Activate On Key Down
-        if(Input.GetKeyDown(KeyCode.A)){ 
-            lastKey    = currentKey == KeyCode.None ? KeyCode.A : currentKey;
-            currentKey = KeyCode.A; 
-            doublePressDetecter();
-        } else if(Input.GetKeyDown(KeyCode.D)){
-            lastKey    = currentKey == KeyCode.None ? KeyCode.D : currentKey;
-            currentKey = KeyCode.D; 
-            doublePressDetecter();
-        } else if(Input.GetKeyDown(KeyCode.W)){
-            lastKey    = currentKey == KeyCode.None ? KeyCode.W : currentKey;
-            currentKey = KeyCode.W; 
-            doublePressDetecter();
-        } else if(Input.GetKeyDown(KeyCode.S)){
-            lastKey    = currentKey == KeyCode.None ? KeyCode.S : currentKey;
-            currentKey = KeyCode.S; 
-            
-            doublePressDetecter();
-        }
-    }
-
-    private void doublePressDetecter(){
-        if(currentKey != lastKey){
-            return;
-        }
-
-        startTime = doublePressCounter == 0 ? Time.time : startTime;
-        doublePressCounter = elapsedTime <= 2f ? doublePressCounter + 1 : 0;
+        dashCurrentPos = transform.position; 
         
-        if(doublePressCounter == 2){
-            currentKey         = KeyCode.None;
-            lastKey            = KeyCode.None;
-            dashMode           = true;
-            initDash           = true;
-            doublePressCounter = 0;
+        //Player must perform all these before dashing
+        if(!dashMode){
+            playerMovement(playerInput());
+            dashDetecter();
+            jumpDetector();        
+        }else{
+            dashPlayerMovement();
+        }
+    }
+
+    /* Checks if the rigidbody is grounded*/
+    private void OnCollisionEnter(Collision other) {
+        jumpMode = false;
+    }
+
+    /*
+        Function: Jump Detector, Params: None
+        This function is used to detect if the player is attempting to jump. 
+        If the space bar is pressed and the player is not currently off the ground,
+        the jump mode is enabled.
+    */
+    private void jumpDetector(){        
+        if(Input.GetKeyDown(KeyCode.Space) && !jumpMode){
+            jumpPlayerMovement();
+            jumpMode  = true;
         } 
     }
 
-    private void dashPlayerMovement(){
-        playerRb.AddForce(transform.up * thrust);
+    /*
+        Function: Dash Detector, Params: None
+        This function is used to detect if the player is attempting to dash.
+        It checks if the l-shift key is being pressed, and if true dash mode is
+        enabled.
+    */
+    private void dashDetecter(){
+        if(Input.GetKeyDown(KeyCode.LeftShift)){
+            lastPlayerMovementInput = playerInput();
+            dashStartPos            = dashCurrentPos;
+            dashMode                = true;
+        }
     }
-
+    
+    /*
+        Function: Player Input, Params: None, Return: Vector3
+        This function is used to detect player input from the A, W, S, D
+        and arrow keys. A vector3 is assembled using the users input and
+        is returned.
+    */
     private Vector3 playerInput(){
         Vector3 movementInput = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         return movementInput;
     }
 
+    /*
+        Function: Jump Player Movement, Params: None
+        This function applies an upward force on the player rigidbody.
+    */
+    private void jumpPlayerMovement(){
+        playerRb.AddForce(new Vector3(0f, jumpHeight, 0f) * jumpThrust, ForceMode.Impulse);
+    }
+
+    /*
+        Function: Dash Player Movement, Params: None
+        This function applies a dash like force on the player.
+        If the player was not in motion when dash mode was enabled,
+        dash mode is disabled. Dash mode will stay enabled until
+        the dash distance threshold is exceeded. 
+    */
+    private void dashPlayerMovement(){
+        if(lastPlayerMovementInput == Vector3.zero){
+            dashMode = false;
+            return;
+        }
+
+        if((dashCurrentPos - dashStartPos).magnitude < maxDashDistance){
+            transform.Translate(lastPlayerMovementInput * dashSpeed * Time.fixedDeltaTime);
+        } else{         
+            dashMode = false;
+        }
+    }
+
+    /*
+        Function: Player Movement, Params: None
+        This function applies movement to the player.
+        If there is no input in the vector then there is no
+        need to calculate movement. If the input identifies 
+        a change in direction, a rotation of the sprite(Left and Right)
+        is made.   
+    */
     private void playerMovement(Vector3 movement){
         if(movement == Vector3.zero){
             return;
