@@ -1,5 +1,5 @@
 # IA_2020
-Unity Developed Game 3D Game with Pixel Art Characters and Weapons!
+Unity Developed 3D Game with Pixel Art Characters and Weapons!
 
 - Impure arena(Tentative Title) is space adventure game with a huge variety in characters and weapons.
 - It is a third person rpg with elements of crafting, looting, and exploration.
