@@ -8,21 +8,29 @@ public class PlayerController : MonoBehaviour
     public float movementSpeed, jumpHeight, jumpThrust, dashSpeed, maxDashDistance;
     public Transform pivotPoint;
     public Rigidbody playerRb;
+    public Camera mainCamera;
+    public Transform target;
 
     // Private Vars
     private Vector3 dashStartPos, dashCurrentPos, lastPlayerMovementInput;
     private KeyCode currentKey, lastKey, dashDirection;
     private bool dashMode, jumpMode;
+    private Animator playerAnimator;
+
+    private void Start(){
+        playerAnimator = this.gameObject.GetComponentInChildren<Animator>();
+    }
 
     // Update is called once per frame
     private void Update(){
         dashCurrentPos = transform.position; 
         
-        //Player must perform all these before dashing
+        //Player can not perform while dashing
         if(!dashMode){
             playerMovement(playerInput());
             dashDetecter();
-            jumpDetector();        
+            jumpDetector(); 
+            groundTarget();       
         }else{
             dashPlayerMovement();
         }
@@ -112,6 +120,7 @@ public class PlayerController : MonoBehaviour
             playIdleAnimation();
             return;
         } 
+        playWalkingAnimation();
 
         if(movement.normalized.x > 0){
             pivotPoint.eulerAngles = new Vector3(0f, 180f, 0f);
@@ -119,15 +128,23 @@ public class PlayerController : MonoBehaviour
             pivotPoint.eulerAngles = new Vector3(0f, 0f, 0f);
         }
         
-        playWalkingAnimation();
         transform.Translate(movement * movementSpeed * Time.fixedDeltaTime);
     }
 
+    private void groundTarget(){
+        Plane plane = new Plane(Vector3.up, -25f);
+        float distanceFromCameraToIntersection;
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        if (plane.Raycast(ray, out distanceFromCameraToIntersection)){
+            target.position = ray.GetPoint(distanceFromCameraToIntersection);
+        }
+    }
+
     private void playIdleAnimation(){
-        this.gameObject.GetComponentInChildren<Animator>().Play("Blend Tree");        
+        playerAnimator.SetFloat("BlendWalkIdle", 0f);
     }
 
     private void playWalkingAnimation(){
-        //this.gameObject.GetComponentInChildren<Animator>().Play("leo_walk");        
+        playerAnimator.SetFloat("BlendWalkIdle", 2f);
     }
 }
