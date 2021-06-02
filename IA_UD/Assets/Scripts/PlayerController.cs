@@ -109,6 +109,7 @@ public class PlayerController : MonoBehaviour
     */
     private void playerMovement(Vector3 movement){
         if(movement == Vector3.zero){
+            playIdleAnimation();
             return;
         } 
 
@@ -118,6 +119,15 @@ public class PlayerController : MonoBehaviour
             pivotPoint.eulerAngles = new Vector3(0f, 0f, 0f);
         }
         
+        playWalkingAnimation();
         transform.Translate(movement * movementSpeed * Time.fixedDeltaTime);
+    }
+
+    private void playIdleAnimation(){
+        this.gameObject.GetComponentInChildren<Animator>().Play("Blend Tree");        
+    }
+
+    private void playWalkingAnimation(){
+        //this.gameObject.GetComponentInChildren<Animator>().Play("leo_walk");        
     }
 }
