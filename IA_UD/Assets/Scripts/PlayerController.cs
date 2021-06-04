@@ -5,11 +5,10 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {   
     // Public Vars
-    public float movementSpeed, jumpHeight, jumpThrust, dashSpeed, maxDashDistance;
-    public Transform pivotPoint;
+    public float movementSpeed, jumpHeight, jumpThrust, dashSpeed, maxDashDistance, maxTargetDistance;
+    public Transform pivotPoint, target;
     public Rigidbody playerRb;
     public Camera mainCamera;
-    public Transform target;
 
     // Private Vars
     private Vector3 dashStartPos, dashCurrentPos, lastPlayerMovementInput;
@@ -133,10 +132,15 @@ public class PlayerController : MonoBehaviour
 
     private void groundTarget(){
         Plane plane = new Plane(Vector3.up, -25f);
-        float distanceFromCameraToIntersection;
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        if (plane.Raycast(ray, out distanceFromCameraToIntersection)){
-            target.position = ray.GetPoint(distanceFromCameraToIntersection);
+        float distanceFromCameraToIntersection; 
+        Ray ray  = mainCamera.ScreenPointToRay(Input.mousePosition);
+        if(plane.Raycast(ray, out distanceFromCameraToIntersection)){
+            if((ray.GetPoint(distanceFromCameraToIntersection) - pivotPoint.position).magnitude < maxTargetDistance){ 
+                target.position = ray.GetPoint(distanceFromCameraToIntersection);
+            } else{
+                Ray line        = new Ray(pivotPoint.position, ray.GetPoint(distanceFromCameraToIntersection) - pivotPoint.position);
+                target.position = line.GetPoint(maxTargetDistance);
+            }
         }
     }
 

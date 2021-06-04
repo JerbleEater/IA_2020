@@ -1690,13 +1690,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1477220244}
-  m_LocalRotation: {x: -0.13192523, y: -0.0008946606, z: 0.000119097254, w: -0.99125934}
-  m_LocalPosition: {x: -24.70808, y: 144.22208, z: 181.88121}
+  m_LocalRotation: {x: 0.28125277, y: 0.00086253486, z: -0.0002527948, w: 0.95963335}
+  m_LocalPosition: {x: -24.70808, y: 246.7, z: 181.88121}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 26.48, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 32.67, y: 0.10300001, z: 0}
 --- !u!114 &1477220248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2154,10 +2154,11 @@ MonoBehaviour:
   jumpThrust: 150
   dashSpeed: 100
   maxDashDistance: 100
+  maxTargetDistance: 100
   pivotPoint: {fileID: 1041995850}
+  target: {fileID: 2018582301}
   playerRb: {fileID: 2020123444}
   mainCamera: {fileID: 1477220246}
-  target: {fileID: 2018582301}
 --- !u!1001 &2076755262
 PrefabInstance:
   m_ObjectHideFlags: 0
