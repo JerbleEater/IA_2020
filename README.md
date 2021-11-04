@@ -6,4 +6,4 @@ Unity Developed 3D Game with Pixel Art Characters and Weapons!
 - Puzzles and pop culture easter eggs will be littered through the entire game.
 - The game will feature a semi-open world enviornment with a main story line and optional side quest and boss fights.
 - Now get ready for this exciting experience in Impure Arena!
-- Expected Release Late Q4 2021.
+- Expected Release Unknown.
